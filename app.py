@@ -6,24 +6,7 @@ import requests
 import streamlit as st
 import importlib
 
-# 1. FORCE NATIVE DARK MODE (Dynamically creates config.toml on boot)
-def enforce_dark_theme():
-    os.makedirs(".streamlit", exist_ok=True)
-    config_path = ".streamlit/config.toml"
-    if not os.path.exists(config_path):
-        with open(config_path, "w") as f:
-            f.write("""[theme]
-base="dark"
-primaryColor="#38bdf8"
-backgroundColor="#0f172a"
-secondaryBackgroundColor="#1e293b"
-textColor="#f8fafc"
-font="sans serif"
-""")
-
-enforce_dark_theme()
-
-# 2. Set page config FIRST
+# 1. Set page config FIRST
 st.set_page_config(
     page_title="TechGov Exam Portal",
     page_icon="🏛️",
@@ -31,7 +14,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 3. Bootstrapper function for private modules
+# 2. Bootstrapper function for private modules
 @st.cache_resource(show_spinner="Initializing secure core modules...")
 def initialize_core_modules():
     pat = st.secrets["GITHUB_PAT"]
@@ -68,7 +51,7 @@ def initialize_core_modules():
 
     return True
 
-# 4. Session State Management
+# 3. Session State Management
 if "current_view" not in st.session_state:
     st.session_state.current_view = "gateway"
 
@@ -243,7 +226,7 @@ def render_gateway(email):
         </div>
     """, unsafe_allow_html=True)
 
-# 5. Native Streamlit Login Handling matching your credentials structure
+# 4. Native Streamlit Login Handling
 user = getattr(st, "user", None)
 is_logged_in = bool(user and hasattr(user, "is_logged_in") and user.is_logged_in)
 
@@ -269,7 +252,7 @@ else:
     elif st.session_state.current_view == "imd":
         col1, col2 = st.columns([1, 8])
         with col1:
-            if st.button("⬅️️ Return to Gateway"):
+            if st.button("⬅ Return to Gateway"):
                 navigate_to("gateway")
                 st.rerun()
         st.markdown("---")

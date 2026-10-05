@@ -227,8 +227,8 @@ def render_gateway(email):
     """, unsafe_allow_html=True)
 
 # 4. Native Streamlit Login Handling
-user = getattr(st, "user", None)
-is_logged_in = bool(user and hasattr(user, "is_logged_in") and user.is_logged_in)
+user = getattr(st, "experimental_user", getattr(st, "user", None))
+is_logged_in = getattr(user, "is_logged_in", False)
 
 if not is_logged_in:
     st.markdown("""

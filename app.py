@@ -82,19 +82,19 @@ def render_gateway(email):
     AUTHORIZED_USER = "ravijaviya303@gmail.com"
     has_access = (email == AUTHORIZED_USER)
 
-    # Dark Theme Injection
+    # Aggressive Dark Theme CSS Injection
     st.markdown("""
         <style>
         /* Force Dark Backgrounds & Typography */
-        .stApp {
-            background-color: #090d16;
-            color: #f1f5f9;
+        .stApp, .main {
+            background-color: #0f172a !important;
+            color: #f8fafc !important;
         }
         
         /* Hero Section */
         .hero-container {
-            background: linear-gradient(135deg, #0b1329 0%, #172554 100%);
-            padding: 2.2rem 2rem;
+            background: linear-gradient(135deg, #020617 0%, #1e3a8a 100%);
+            padding: 2.5rem 2rem;
             border-radius: 12px;
             color: #f8fafc;
             margin-bottom: 2rem;
@@ -110,38 +110,36 @@ def render_gateway(email):
             letter-spacing: -0.02em;
         }
         .hero-subtitle {
-            font-size: 1.05rem;
+            font-size: 1.1rem;
             font-weight: 400;
             color: #93c5fd;
             max-width: 850px;
             line-height: 1.5;
         }
         .user-badge-box {
-            background: rgba(15, 23, 42, 0.7);
+            background: rgba(15, 23, 42, 0.8);
             border: 1px solid #334155;
-            padding: 10px 16px;
+            padding: 12px 18px;
             border-radius: 8px;
             text-align: right;
+            backdrop-filter: blur(4px);
         }
 
         /* Section Headings */
         .section-header {
             font-size: 1.35rem;
             font-weight: 700;
-            color: #e2e8f0;
+            color: #f1f5f9;
             margin-top: 2rem;
             margin-bottom: 1.2rem;
             padding-bottom: 0.5rem;
             border-bottom: 1px solid #334155;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         /* Cards in Dark Mode */
         .pro-card {
-            background: #111827;
-            border: 1px solid #1f2937;
+            background: #1e293b;
+            border: 1px solid #334155;
             border-radius: 10px;
             padding: 22px;
             height: 245px;
@@ -154,7 +152,7 @@ def render_gateway(email):
         .pro-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 12px 24px -5px rgba(0, 0, 0, 0.6);
-            border-color: #374151;
+            border-color: #475569;
         }
         .pro-card::before {
             content: '';
@@ -183,7 +181,7 @@ def render_gateway(email):
         }
         .card-desc {
             font-size: 0.9rem;
-            color: #94a3b8;
+            color: #cbd5e1;
             line-height: 1.5;
         }
 
@@ -334,7 +332,7 @@ def render_gateway(email):
     st.markdown("""
         <div class="portal-footer">
             Identity verification enforced via Google OAuth 2.0. Unauthorized access attempts are monitored.<br>
-            System v2.6.0
+            System v3.0.0
         </div>
     """, unsafe_allow_html=True)
 
@@ -342,7 +340,7 @@ def render_gateway(email):
 if not st.session_state.user_email:
     st.markdown("""
         <style>
-        .stApp { background-color: #090d16; color: #f1f5f9; }
+        .stApp { background-color: #0f172a !important; color: #f8fafc !important; }
         </style>
         <div style="text-align: center; margin-top: 12vh;">
             <h1 style="color: #60a5fa; font-size: 3rem; font-weight: 800; letter-spacing: -0.02em;">🏛️ TechGov Portal</h1>
@@ -362,13 +360,26 @@ if not st.session_state.user_email:
         )
         
         if result:
-            token = result["token"]["access_token"]
-            resp = requests.get("https://www.googleapis.com/oauth2/v1/userinfo", headers={"Authorization": f"Bearer {token}"})
-            if resp.status_code == 200:
-                st.session_state.user_email = resp.json().get("email")
-                st.rerun()
+            # FIX: Clear query params immediately to break the infinite reload loop!
+            if hasattr(st, "query_params"):
+                st.query_params.clear()
             else:
-                st.error("Authentication failed. Unable to verify credentials with Google.")
+                st.experimental_set_query_params() # Fallback for older Streamlit versions
+                
+            if "token" in result:
+                token = result["token"]["access_token"]
+                try:
+                    with st.spinner("Verifying identity..."):
+                        resp = requests.get("https://www.googleapis.com/oauth2/v1/userinfo", headers={"Authorization": f"Bearer {token}"}, timeout=10)
+                        if resp.status_code == 200:
+                            st.session_state.user_email = resp.json().get("email")
+                            st.rerun()
+                        else:
+                            st.error(f"Authentication failed with Google (Status {resp.status_code}).")
+                except Exception as e:
+                    st.error(f"Network error during verification: {e}")
+            else:
+                st.error("Authentication canceled or token missing.")
 else:
     initialize_core_modules()
 

@@ -231,18 +231,18 @@ user = getattr(st, "user", None)
 is_logged_in = bool(user and hasattr(user, "is_logged_in") and user.is_logged_in)
 
 if not is_logged_in:
-    st.markdown("""
-        <div style="text-align: center; margin-top: 15vh;">
-            <h1 style="color: #60a5fa; font-size: 3rem; font-weight: 800;">🏛️ TechGov Portal</h1>
-            <p style="color: #94a3b8; font-size: 1.15rem; margin-bottom: 2rem;">Authorized Personnel Only • Identity Verification Required</p>
-        </div>
-    """, unsafe_allow_html=True)
+#     st.markdown("""
+#         <div style="text-align: center; margin-top: 15vh;">
+#             <h1 style="color: #60a5fa; font-size: 3rem; font-weight: 800;">🏛️ TechGov Portal</h1>
+#             <p style="color: #94a3b8; font-size: 1.15rem; margin-bottom: 2rem;">Authorized Personnel Only • Identity Verification Required</p>
+#         </div>
+#     """, unsafe_allow_html=True)
     
-    col1, col2, col3 = st.columns([1, 1, 1])
-    with col2:
-        if st.button("Log in with Google", type="primary", use_container_width=True):
-            st.login()
-else:
+#     col1, col2, col3 = st.columns([1, 1, 1])
+#     with col2:
+#         if st.button("Log in with Google", type="primary", use_container_width=True):
+#             st.login()
+# else:
     user_email = getattr(user, "email", "").strip().lower()
     initialize_core_modules()
 

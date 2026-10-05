@@ -241,7 +241,7 @@ if not is_logged_in:
     col1, col2, col3 = st.columns([1, 1, 1])
     with col2:
         if st.button("Log in with Google", type="primary", use_container_width=True):
-            st.login()
+            st.login("google")
 else:
     user_email = getattr(user, "email", "").strip().lower()
     initialize_core_modules()
@@ -257,8 +257,10 @@ else:
                 st.rerun()
         st.markdown("---")
         try:
+            is_loaded = "IMD_scientistB_instrumentation" in sys.modules
             import IMD_scientistB_instrumentation
-            importlib.reload(IMD_scientistB_instrumentation)
+            if is_loaded:
+                importlib.reload(IMD_scientistB_instrumentation)
         except Exception as e:
             st.error(f"Failed to load module: {e}")
 
@@ -270,8 +272,10 @@ else:
                 st.rerun()
         st.markdown("---")
         try:
+            is_loaded = "wireless_psi" in sys.modules
             import wireless_psi
-            importlib.reload(wireless_psi)
+            if is_loaded:
+                importlib.reload(wireless_psi)
         except Exception as e:
             st.error(f"Failed to load module: {e}")
 
@@ -283,7 +287,9 @@ else:
                 st.rerun()
         st.markdown("---")
         try:
+            is_loaded = "DCIO_tech" in sys.modules
             import DCIO_tech
-            importlib.reload(DCIO_tech)
+            if is_loaded:
+                importlib.reload(DCIO_tech)
         except Exception as e:
             st.error(f"Failed to load module: {e}")

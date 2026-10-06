@@ -14,7 +14,11 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 2. Inject Global CSS for consistent sidebar & modernized UI styling
+# 2. Check query parameters for view routing (Enables whole-card clicking)
+if "view" in st.query_params:
+    st.session_state.current_view = st.query_params["view"]
+
+# 3. Inject Global CSS for consistent sidebar & modernized UI styling
 st.markdown("""
     <style>
     /* Global Sidebar Navigation Buttons */
@@ -55,30 +59,10 @@ st.markdown("""
         -webkit-text-fill-color: transparent;
         font-weight: 800;
     }
-
-    /* Entire Card Clickable Hack */
-    div[data-testid="stButton"]:has(button[title="LaunchModule"]) {
-        margin-top: -285px; /* Pull the invisible button up over the card */
-        height: 260px;
-        opacity: 0;
-        z-index: 99;
-    }
-    div[data-testid="stButton"]:has(button[title="LaunchModule"]) button {
-        height: 260px;
-        width: 100%;
-        cursor: pointer;
-    }
-    /* Re-enable hover effect on the card when hovering over the column containing the invisible button */
-    div[data-testid="column"]:has(button[title="LaunchModule"]):hover .pro-card {
-        transform: translateY(-5px);
-        border-color: #475569;
-        box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.4);
-        background: rgba(30, 41, 59, 0.8);
-    }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. Bootstrapper function for private modules
+# 4. Bootstrapper function for private modules
 @st.cache_resource(show_spinner="Initializing secure core modules...")
 def initialize_core_modules():
     pat = st.secrets["GITHUB_PAT"]
@@ -115,12 +99,13 @@ def initialize_core_modules():
 
     return True
 
-# 4. Session State Management
+# 5. Session State Management
 if "current_view" not in st.session_state:
     st.session_state.current_view = "gateway"
 
 def navigate_to(view):
     st.session_state.current_view = view
+    st.query_params["view"] = view
 
 def render_gateway(email):
     AUTHORIZED_USER = "ravijaviya303@gmail.com"
@@ -183,11 +168,17 @@ def render_gateway(email):
             border: 1px solid #334155;
             border-radius: 14px;
             padding: 26px;
-            height: 260px;
+            height: 250px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
             position: relative;
             backdrop-filter: blur(10px);
+        }
+        .pro-card:hover {
+            transform: translateY(-5px);
+            border-color: #475569;
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.4);
+            background: rgba(30, 41, 59, 0.8);
         }
         .active-card { border-top: 4px solid #10b981; }
         .locked-card { border-top: 4px solid #ef4444; }
@@ -231,12 +222,13 @@ def render_gateway(email):
                 st.logout()
             else:
                 st.session_state.clear()
+            st.query_params.clear()
             st.rerun()
 
     if not has_access:
         st.error("🔒 **Restricted Access:** Your account is not authorized to open primary study modules.")
 
-    # --- ACTIVE MODULES ---
+    # --- ACTIVE MODULES (Entire Card Clickable via Clean Anchor Tags) ---
     st.markdown('<div class="section-header">📚 Active Study Modules</div>', unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns(3)
@@ -244,62 +236,54 @@ def render_gateway(email):
     badge_class = "badge-active" if has_access else "badge-locked"
     badge_text = "AVAILABLE" if has_access else "LOCKED"
 
+    imd_href = "?view=imd" if has_access else "#"
+    guj_href = "?view=gujarat" if has_access else "#"
+    dcio_href = "?view=dcio" if has_access else "#"
+
     with col1:
         st.markdown(f"""
-            <div class="pro-card {card_class}">
-                <span class="status-badge {badge_class}">{badge_text}</span>
-                <div class="card-title">UPSC IMD Scientist 'B'</div>
-                <div class="card-discipline">Instrumentation / Electronics</div>
-                <div class="card-desc">Complete 15-day syllabus covering ICT, Materials Science, Energy, Project Management, and telemetry.</div>
-            </div>
+            <a href="{imd_href}" style="text-decoration: none; display: block;">
+                <div class="pro-card {card_class}">
+                    <span class="status-badge {badge_class}">{badge_text}</span>
+                    <div class="card-title">UPSC IMD Scientist 'B'</div>
+                    <div class="card-discipline">Instrumentation / Electronics</div>
+                    <div class="card-desc">Complete 15-day syllabus covering ICT, Materials Science, Energy, Project Management, and telemetry.</div>
+                </div>
+            </a>
         """, unsafe_allow_html=True)
-        if has_access:
-            if st.button("Launch", key="imd_btn", help="LaunchModule", use_container_width=True):
-                navigate_to("imd")
-                st.rerun()
-        else:
-            st.button("Locked", key="imd_btn", help="LaunchModule", disabled=True, use_container_width=True)
 
     with col2:
         st.markdown(f"""
-            <div class="pro-card {card_class}">
-                <span class="status-badge {badge_class}">{badge_text}</span>
-                <div class="card-title">Gujarat Police</div>
-                <div class="card-discipline">Wireless PSI & Tech Operator</div>
-                <div class="card-desc">Full 11-chapter engineering compendium, formulas, radar, antennas, and state surveillance systems.</div>
-            </div>
+            <a href="{guj_href}" style="text-decoration: none; display: block;">
+                <div class="pro-card {card_class}">
+                    <span class="status-badge {badge_class}">{badge_text}</span>
+                    <div class="card-title">Gujarat Police</div>
+                    <div class="card-discipline">Wireless PSI & Tech Operator</div>
+                    <div class="card-desc">Full 11-chapter engineering compendium, formulas, radar, antennas, and state surveillance systems.</div>
+                </div>
+            </a>
         """, unsafe_allow_html=True)
-        if has_access:
-            if st.button("Launch", key="guj_btn", help="LaunchModule", use_container_width=True):
-                navigate_to("gujarat")
-                st.rerun()
-        else:
-            st.button("Locked", key="guj_btn", help="LaunchModule", disabled=True, use_container_width=True)
 
     with col3:
         st.markdown(f"""
-            <div class="pro-card {card_class}">
-                <span class="status-badge {badge_class}">{badge_text}</span>
-                <div class="card-title">IB / MHA</div>
-                <div class="card-discipline">DCIO (Technical)</div>
-                <div class="card-desc">Cyber defense, digital forensics, RF interception, cryptography, and network telemetry.</div>
-            </div>
+            <a href="{dcio_href}" style="text-decoration: none; display: block;">
+                <div class="pro-card {card_class}">
+                    <span class="status-badge {badge_class}">{badge_text}</span>
+                    <div class="card-title">IB / MHA</div>
+                    <div class="card-discipline">DCIO (Technical)</div>
+                    <div class="card-desc">Cyber defense, digital forensics, RF interception, cryptography, and network telemetry.</div>
+                </div>
+            </a>
         """, unsafe_allow_html=True)
-        if has_access:
-            if st.button("Launch", key="dcio_btn", help="LaunchModule", use_container_width=True):
-                navigate_to("dcio")
-                st.rerun()
-        else:
-            st.button("Locked", key="dcio_btn", help="LaunchModule", disabled=True, use_container_width=True)
 
     st.markdown("""
         <div class="portal-footer">
             Identity verification enforced via Google OAuth 2.0.<br>
-            PrepByRJ System v4.1.0
+            PrepByRJ System v4.2.0
         </div>
     """, unsafe_allow_html=True)
 
-# 5. Native Streamlit Login Handling
+# 6. Native Streamlit Login Handling
 user = getattr(st, "experimental_user", getattr(st, "user", None))
 is_logged_in = getattr(user, "is_logged_in", False)
 
@@ -317,7 +301,6 @@ if not is_logged_in:
         </div>
     """, unsafe_allow_html=True)
     
-    # Position the login button cleanly inside the visual glass panel area
     col1, col2, col3 = st.columns([1, 1, 1])
     with col2:
         st.markdown("<div style='margin-top: -6rem; padding: 0 2rem;'>", unsafe_allow_html=True)
@@ -335,6 +318,7 @@ else:
         with st.sidebar:
             if st.button("⬅️ Return to PrepByRJ Gateway", type="primary", use_container_width=True):
                 navigate_to("gateway")
+                st.query_params.clear()
                 st.rerun()
             st.markdown("---")
 

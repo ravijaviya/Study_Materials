@@ -55,6 +55,26 @@ st.markdown("""
         -webkit-text-fill-color: transparent;
         font-weight: 800;
     }
+
+    /* Entire Card Clickable Hack */
+    div[data-testid="stButton"]:has(button[title="LaunchModule"]) {
+        margin-top: -285px; /* Pull the invisible button up over the card */
+        height: 260px;
+        opacity: 0;
+        z-index: 99;
+    }
+    div[data-testid="stButton"]:has(button[title="LaunchModule"]) button {
+        height: 260px;
+        width: 100%;
+        cursor: pointer;
+    }
+    /* Re-enable hover effect on the card when hovering over the column containing the invisible button */
+    div[data-testid="column"]:has(button[title="LaunchModule"]):hover .pro-card {
+        transform: translateY(-5px);
+        border-color: #475569;
+        box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.4);
+        background: rgba(30, 41, 59, 0.8);
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -169,12 +189,6 @@ def render_gateway(email):
             position: relative;
             backdrop-filter: blur(10px);
         }
-        .pro-card:hover {
-            transform: translateY(-5px);
-            border-color: #475569;
-            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.4);
-            background: rgba(30, 41, 59, 0.8);
-        }
         .active-card { border-top: 4px solid #10b981; }
         .locked-card { border-top: 4px solid #ef4444; }
         
@@ -240,11 +254,11 @@ def render_gateway(email):
             </div>
         """, unsafe_allow_html=True)
         if has_access:
-            if st.button("Launch Module ➔", key="imd_btn", type="primary", use_container_width=True):
+            if st.button("Launch", key="imd_btn", help="LaunchModule", use_container_width=True):
                 navigate_to("imd")
                 st.rerun()
         else:
-            st.button("🔒 Locked", key="imd_btn", disabled=True, use_container_width=True)
+            st.button("Locked", key="imd_btn", help="LaunchModule", disabled=True, use_container_width=True)
 
     with col2:
         st.markdown(f"""
@@ -256,11 +270,11 @@ def render_gateway(email):
             </div>
         """, unsafe_allow_html=True)
         if has_access:
-            if st.button("Launch Module ➔", key="guj_btn", type="primary", use_container_width=True):
+            if st.button("Launch", key="guj_btn", help="LaunchModule", use_container_width=True):
                 navigate_to("gujarat")
                 st.rerun()
         else:
-            st.button("🔒 Locked", key="guj_btn", disabled=True, use_container_width=True)
+            st.button("Locked", key="guj_btn", help="LaunchModule", disabled=True, use_container_width=True)
 
     with col3:
         st.markdown(f"""
@@ -272,11 +286,11 @@ def render_gateway(email):
             </div>
         """, unsafe_allow_html=True)
         if has_access:
-            if st.button("Launch Module ➔", key="dcio_btn", type="primary", use_container_width=True):
+            if st.button("Launch", key="dcio_btn", help="LaunchModule", use_container_width=True):
                 navigate_to("dcio")
                 st.rerun()
         else:
-            st.button("🔒 Locked", key="dcio_btn", disabled=True, use_container_width=True)
+            st.button("Locked", key="dcio_btn", help="LaunchModule", disabled=True, use_container_width=True)
 
     st.markdown("""
         <div class="portal-footer">

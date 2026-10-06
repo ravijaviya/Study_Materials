@@ -14,7 +14,34 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 2. Bootstrapper function for private modules
+# 2. Inject Global CSS for consistent sidebar & UI styling
+st.markdown("""
+    <style>
+    /* Global Sidebar Navigation Buttons */
+    section[data-testid="stSidebar"] .stButton>button {
+        text-align: left !important;
+        justify-content: flex-start !important;
+        padding-left: 15px !important;
+        border: none !important;
+        background-color: transparent;
+        color: #94a3b8;
+        transition: all 0.2s ease-in-out;
+    }
+    section[data-testid="stSidebar"] .stButton>button:hover {
+        background-color: #1e293b;
+        color: #f8fafc;
+    }
+    /* Specifically target the Return to Gateway button to make it distinct */
+    section[data-testid="stSidebar"] .stButton>button[kind="primary"] {
+        color: #38bdf8 !important;
+        background-color: rgba(15, 23, 42, 0.5);
+        border-bottom: 1px solid #334155 !important;
+        border-radius: 0px;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# 3. Bootstrapper function for private modules
 @st.cache_resource(show_spinner="Initializing secure core modules...")
 def initialize_core_modules():
     pat = st.secrets["GITHUB_PAT"]
@@ -51,7 +78,7 @@ def initialize_core_modules():
 
     return True
 
-# 3. Session State Management
+# 4. Session State Management
 if "current_view" not in st.session_state:
     st.session_state.current_view = "gateway"
 
@@ -222,11 +249,11 @@ def render_gateway(email):
 
     st.markdown("""
         <div class="portal-footer">
-            Identity verification enforced via Google OAuth 2.0. System v3.3.0
+            Identity verification enforced via Google OAuth 2.0. System v4.0.0
         </div>
     """, unsafe_allow_html=True)
 
-# 4. Native Streamlit Login Handling
+# 5. Native Streamlit Login Handling
 user = getattr(st, "experimental_user", getattr(st, "user", None))
 is_logged_in = getattr(user, "is_logged_in", False)
 
@@ -248,48 +275,38 @@ else:
 
     if st.session_state.current_view == "gateway":
         render_gateway(user_email)
-
-    elif st.session_state.current_view == "imd":
-        col1, col2 = st.columns([1, 8])
-        with col1:
-            if st.button("⬅ Return to Gateway"):
+    else:
+        # Centralized Back Button placed at the very top of the sidebar for all modules
+        with st.sidebar:
+            if st.button("⬅️ Return to TechGov Gateway", type="primary", use_container_width=True):
                 navigate_to("gateway")
                 st.rerun()
-        st.markdown("---")
-        try:
-            is_loaded = "IMD_scientistB_instrumentation" in sys.modules
-            import IMD_scientistB_instrumentation
-            if is_loaded:
-                importlib.reload(IMD_scientistB_instrumentation)
-        except Exception as e:
-            st.error(f"Failed to load module: {e}")
+            st.markdown("---")
 
-    elif st.session_state.current_view == "gujarat":
-        col1, col2 = st.columns([1, 8])
-        with col1:
-            if st.button("⬅️ Return to Gateway"):
-                navigate_to("gateway")
-                st.rerun()
-        st.markdown("---")
-        try:
-            is_loaded = "wireless_psi" in sys.modules
-            import wireless_psi
-            if is_loaded:
-                importlib.reload(wireless_psi)
-        except Exception as e:
-            st.error(f"Failed to load module: {e}")
+        # Module Routing
+        if st.session_state.current_view == "imd":
+            try:
+                is_loaded = "IMD_scientistB_instrumentation" in sys.modules
+                import IMD_scientistB_instrumentation
+                if is_loaded:
+                    importlib.reload(IMD_scientistB_instrumentation)
+            except Exception as e:
+                st.error(f"Failed to load module: {e}")
 
-    elif st.session_state.current_view == "dcio":
-        col1, col2 = st.columns([1, 8])
-        with col1:
-            if st.button("⬅️ Return to Gateway"):
-                navigate_to("gateway")
-                st.rerun()
-        st.markdown("---")
-        try:
-            is_loaded = "DCIO_tech" in sys.modules
-            import DCIO_tech
-            if is_loaded:
-                importlib.reload(DCIO_tech)
-        except Exception as e:
-            st.error(f"Failed to load module: {e}")
+        elif st.session_state.current_view == "gujarat":
+            try:
+                is_loaded = "wireless_psi" in sys.modules
+                import wireless_psi
+                if is_loaded:
+                    importlib.reload(wireless_psi)
+            except Exception as e:
+                st.error(f"Failed to load module: {e}")
+
+        elif st.session_state.current_view == "dcio":
+            try:
+                is_loaded = "DCIO_tech" in sys.modules
+                import DCIO_tech
+                if is_loaded:
+                    importlib.reload(DCIO_tech)
+            except Exception as e:
+                st.error(f"Failed to load module: {e}")

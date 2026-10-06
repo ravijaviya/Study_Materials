@@ -8,13 +8,13 @@ import importlib
 
 # 1. Set page config FIRST
 st.set_page_config(
-    page_title="TechGov Exam Portal",
-    page_icon="🏛️",
+    page_title="PrepByRJ Portal",
+    page_icon="🚀",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# 2. Inject Global CSS for consistent sidebar & UI styling
+# 2. Inject Global CSS for consistent sidebar & modernized UI styling
 st.markdown("""
     <style>
     /* Global Sidebar Navigation Buttons */
@@ -37,6 +37,23 @@ st.markdown("""
         background-color: rgba(15, 23, 42, 0.5);
         border-bottom: 1px solid #334155 !important;
         border-radius: 0px;
+    }
+    
+    /* Modernized Glassmorphism Login & Hero */
+    .glass-panel {
+        background: rgba(30, 41, 59, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5);
+    }
+    
+    .gradient-text {
+        background: linear-gradient(to right, #38bdf8, #818cf8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 800;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -92,73 +109,87 @@ def render_gateway(email):
     st.markdown("""
         <style>
         .hero-container {
-            background: linear-gradient(135deg, #020617 0%, #1e3a8a 100%);
-            padding: 2.5rem 2rem;
-            border-radius: 12px;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            padding: 3rem 2.5rem;
+            border-radius: 16px;
             color: #f8fafc;
-            margin-bottom: 2rem;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-            border: 1px solid #1e293b;
-            border-bottom: 4px solid #f59e0b;
-        }
-        .hero-title {
-            font-size: 2.4rem;
-            font-weight: 800;
-            color: #ffffff;
-            margin-bottom: 0.4rem;
-        }
-        .hero-subtitle {
-            font-size: 1.1rem;
-            color: #93c5fd;
-            line-height: 1.5;
-        }
-        .user-badge-box {
-            background: rgba(15, 23, 42, 0.8);
+            margin-bottom: 2.5rem;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
             border: 1px solid #334155;
-            padding: 12px 18px;
-            border-radius: 8px;
-            text-align: right;
-        }
-        .section-header {
-            font-size: 1.35rem;
-            font-weight: 700;
-            color: #f1f5f9;
-            margin-top: 2rem;
-            margin-bottom: 1.2rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid #334155;
-        }
-        .pro-card {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 10px;
-            padding: 22px;
-            height: 250px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            margin-bottom: 15px;
             position: relative;
+            overflow: hidden;
         }
-        .pro-card::before {
+        .hero-container::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 3px;
+            top: -50px; right: -50px;
+            width: 250px; height: 250px;
+            background: #38bdf8;
+            filter: blur(120px);
+            opacity: 0.15;
+            border-radius: 50%;
         }
-        .pro-card.active-card::before { background: #10b981; }
-        .pro-card.locked-card::before { background: #ef4444; }
-        .pro-card.dev-card::before { background: #f59e0b; }
-        .card-title { font-size: 1.2rem; font-weight: 700; color: #f8fafc; margin-bottom: 3px; }
-        .card-discipline { font-size: 0.82rem; font-weight: 600; color: #38bdf8; margin-bottom: 10px; text-transform: uppercase; }
-        .card-desc { font-size: 0.9rem; color: #cbd5e1; line-height: 1.5; }
+        .hero-title {
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+        .hero-subtitle {
+            font-size: 1.15rem;
+            color: #94a3b8;
+            max-width: 800px;
+            line-height: 1.6;
+        }
+        .user-badge-box {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid #334155;
+            padding: 15px 20px;
+            border-radius: 12px;
+            text-align: right;
+            backdrop-filter: blur(8px);
+        }
+        .section-header {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-top: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .pro-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 26px;
+            height: 260px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+        .pro-card:hover {
+            transform: translateY(-5px);
+            border-color: #475569;
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.4);
+            background: rgba(30, 41, 59, 0.8);
+        }
+        .active-card { border-top: 4px solid #10b981; }
+        .locked-card { border-top: 4px solid #ef4444; }
+        
+        .card-title { font-size: 1.3rem; font-weight: 700; color: #f8fafc; margin-bottom: 6px; padding-right: 80px; }
+        .card-discipline { font-size: 0.85rem; font-weight: 600; color: #38bdf8; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .card-desc { font-size: 0.95rem; color: #cbd5e1; line-height: 1.5; }
+        
         .status-badge {
-            position: absolute; top: 18px; right: 18px; padding: 3px 8px;
-            border-radius: 6px; font-size: 0.72rem; font-weight: 700;
+            position: absolute; top: 22px; right: 22px; padding: 4px 10px;
+            border-radius: 20px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;
         }
-        .badge-active { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid #059669; }
-        .badge-locked { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid #b91c1c; }
-        .badge-dev { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid #d97706; }
+        .badge-active { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-locked { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
         .portal-footer {
-            margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid #1e293b;
+            margin-top: 5rem; padding-top: 2rem; border-top: 1px solid #1e293b;
             text-align: center; font-size: 0.85rem; color: #64748b;
         }
         </style>
@@ -169,19 +200,19 @@ def render_gateway(email):
     with col_hero:
         st.markdown("""
             <div class="hero-container">
-                <div class="hero-title">🏛️ TechGov Examination Portal</div>
-                <div class="hero-subtitle">Centralized access to specialized technical recruitment study compendiums and engineering notes.</div>
+                <div class="hero-title gradient-text">🚀 PrepByRJ Academy</div>
+                <div class="hero-subtitle">Premium master compendiums, integrated mock engines, and PYQ analytics for advanced technical recruitment.</div>
             </div>
         """, unsafe_allow_html=True)
     with col_prof:
         st.markdown(f"""
             <div class="user-badge-box">
-                <div style="font-size: 0.8rem; color: #94a3b8;">Authenticated Identity</div>
-                <div style="font-weight: 600; font-size: 0.95rem; color: #e2e8f0; margin-bottom: 8px;">{email}</div>
+                <div style="font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Authenticated Identity</div>
+                <div style="font-weight: 600; font-size: 1rem; color: #e2e8f0; margin-bottom: 10px;">{email}</div>
             </div>
         """, unsafe_allow_html=True)
         st.write("")
-        if st.button("Log Out", use_container_width=True):
+        if st.button("Secure Log Out", use_container_width=True):
             if hasattr(st, "logout"):
                 st.logout()
             else:
@@ -192,7 +223,7 @@ def render_gateway(email):
         st.error("🔒 **Restricted Access:** Your account is not authorized to open primary study modules.")
 
     # --- ACTIVE MODULES ---
-    st.markdown('<div class="section-header">🟢 Active Study Modules</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-header">📚 Active Study Modules</div>', unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns(3)
     card_class = "active-card" if has_access else "locked-card"
@@ -249,7 +280,8 @@ def render_gateway(email):
 
     st.markdown("""
         <div class="portal-footer">
-            Identity verification enforced via Google OAuth 2.0. System v4.0.0
+            Identity verification enforced via Google OAuth 2.0.<br>
+            PrepByRJ System v4.1.0
         </div>
     """, unsafe_allow_html=True)
 
@@ -258,17 +290,26 @@ user = getattr(st, "experimental_user", getattr(st, "user", None))
 is_logged_in = getattr(user, "is_logged_in", False)
 
 if not is_logged_in:
+    # Modernized Login Screen
     st.markdown("""
-        <div style="text-align: center; margin-top: 15vh;">
-            <h1 style="color: #60a5fa; font-size: 3rem; font-weight: 800;">🏛️ TechGov Portal</h1>
-            <p style="color: #94a3b8; font-size: 1.15rem; margin-bottom: 2rem;">Authorized Personnel Only • Identity Verification Required</p>
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 65vh;">
+            <div class="glass-panel" style="padding: 3.5rem 4rem; text-align: center; max-width: 550px;">
+                <h1 class="gradient-text" style="font-size: 3.2rem; margin-bottom: 0.5rem; letter-spacing: -0.03em;">🚀 PrepByRJ</h1>
+                <p style="color: #94a3b8; font-size: 1.15rem; margin-bottom: 2rem; line-height: 1.5;">Advanced Technical Recruitment & Engineering Compendium Portal.</p>
+                <div style="background: rgba(15, 23, 42, 0.4); border: 1px solid #334155; padding: 12px; border-radius: 8px; margin-bottom: 2rem;">
+                    <p style="color: #cbd5e1; font-size: 0.9rem; margin: 0;">🔒 Authorized Personnel Only. Secure identity verification required to proceed.</p>
+                </div>
+            </div>
         </div>
     """, unsafe_allow_html=True)
     
+    # Position the login button cleanly inside the visual glass panel area
     col1, col2, col3 = st.columns([1, 1, 1])
     with col2:
-        if st.button("Log in with Google", type="primary", use_container_width=True):
+        st.markdown("<div style='margin-top: -6rem; padding: 0 2rem;'>", unsafe_allow_html=True)
+        if st.button("Verify Identity with Google", type="primary", use_container_width=True):
             st.login("google")
+        st.markdown("</div>", unsafe_allow_html=True)
 else:
     user_email = getattr(user, "email", "").strip().lower()
     initialize_core_modules()
@@ -278,7 +319,7 @@ else:
     else:
         # Centralized Back Button placed at the very top of the sidebar for all modules
         with st.sidebar:
-            if st.button("⬅️ Return to TechGov Gateway", type="primary", use_container_width=True):
+            if st.button("⬅️ Return to PrepByRJ Gateway", type="primary", use_container_width=True):
                 navigate_to("gateway")
                 st.rerun()
             st.markdown("---")

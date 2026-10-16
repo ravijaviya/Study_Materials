@@ -104,6 +104,8 @@ def navigate_to(view):
 
 def render_gateway(email):
     AUTHORIZED_USER = "ravijaviya303@gmail.com"
+    wpsi_user_email = "vivekdesai45@gmail.com"
+    wpsi_user = (email == wpsi_user_email)
     has_access = (email == AUTHORIZED_USER)
 
     st.markdown("""
@@ -255,7 +257,7 @@ def render_gateway(email):
                 <div class="card-desc">Full 11-chapter engineering compendium, formulas, radar, antennas, and state surveillance systems.</div>
             </div>
         """, unsafe_allow_html=True)
-        if has_access:
+        if has_access or wpsi_user:
             if st.button("Launch Module ➔", key="guj_btn", type="primary", use_container_width=True):
                 navigate_to("gujarat")
                 st.rerun()
